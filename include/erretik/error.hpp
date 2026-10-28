@@ -16,6 +16,8 @@
 #include <system_error>
 #include <utility>
 
+#include "stacktrace_stub.hpp"
+
 namespace erretik {
     /// @brief Provides wrapper for error_code, message and stacktrace
     ///

@@ -10,7 +10,5 @@
 
 #pragma once
 
-#include "erretik/stacktrace_stub.hpp"
-
 #include "erretik/error.hpp"
 #include "erretik/error_code.hpp"
