@@ -16,7 +16,9 @@
 #include <system_error>
 #include <utility>
 
-#include "stacktrace_stub.hpp"
+#ifdef ERRETIK_FULL
+#include <cpptrace/cpptrace.hpp>
+#endif
 
 namespace erretik {
     /// @brief Provides wrapper for error_code, message and stacktrace
@@ -26,19 +28,28 @@ namespace erretik {
     ///     generic_error_code<your_error_enum>::make_error_code(your_error_enum::file_not_found),
     ///     "File '{}' does not exist", "SomeFile.txt"
     /// );
+    /// @endcode
     class error {
-        stacktrace stacktrace;
-
         std::string message;
 
         std::error_code code;
 
+#ifdef ERRETIK_FULL
+        cpptrace::stacktrace stacktrace;
+#endif
+
         error(const decltype(code) error_code, std::string msg)
-        : stacktrace(stacktrace::current(1)), message(std::move(msg)), code(error_code) {}
+        : message(std::move(msg)), code(error_code)
+        #ifdef ERRETIK_FULL
+        , stacktrace(cpptrace::generate_trace(2))
+        #endif
+        {}
     public:
         [[nodiscard]] std::error_code get_code() const { return code; }
         [[nodiscard]] std::string_view get_message() const { return message; }
-        [[nodiscard]] const erretik::stacktrace& get_stacktrace() const { return stacktrace; }
+#ifdef ERRETIK_FULL
+        [[nodiscard]] const cpptrace::stacktrace& get_stacktrace() const { return stacktrace; }
+#endif
 
         template <class... Args>
         [[nodiscard]] static error make_error(

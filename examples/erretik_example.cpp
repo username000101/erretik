@@ -1,4 +1,5 @@
 #include <erretik/erretik.hpp>
+#include <erretik/features_support.hpp>
 
 enum class erretik_err { file_not_found, magic_mismatch };
 
@@ -51,4 +52,16 @@ int main() {
     // use error.get_stacktrace() to get.. stacktrace!
     // use error.get_message() to get message
     // etc.
+
+    // some features may be unavailable - check this with erretik/features_support.hpp:
+    if constexpr(erretik::STACKTRACE_SUPPORTED) {
+        // stacktrace supported here
+        error.get_stacktrace().print_with_snippets();
+    }
+
+    // or through macros:
+#ifdef ERRETIK_FULL
+    // stacktrace supported here
+#endif
+
 }

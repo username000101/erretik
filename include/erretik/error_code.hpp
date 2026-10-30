@@ -65,6 +65,7 @@ namespace erretik {
     ///         },
     ///     };
     /// };
+    /// @endcode
     template <typename ErrorEnum>
     struct error_t;
 
@@ -72,6 +73,7 @@ namespace erretik {
     ///
     /// @code
     /// generic_error_code<your_error_enum>::make_error_code(your_error_enum::error1)
+    /// @endcode
     template <typename ErrorEnum>
     struct generic_error_code : std::error_category {
         [[nodiscard]] const char* name() const noexcept override {
@@ -83,7 +85,7 @@ namespace erretik {
             return category;
         }
 
-        [[nodiscard]] std::string message(int error_code) const override {
+        [[nodiscard]] std::string message(const int error_code) const override {
             for (const auto& [code, description] : error_t<ErrorEnum>::descriptions)
                 if (static_cast<int>(code) == error_code) return std::string(description);
             return "unknown error";

@@ -5,48 +5,24 @@ project(erretik
 )
 
 option(ERRETIK_EXAMPLES "Enable erretik test executable?" ON)
-option(ERRETIK_ENSURE_STACKTRACE "If enabled, fails configuration if <stacktrace> not supported" ON)
+option(ERRETIK_FULL "Enables all features of erretik: stacktrace and others. If you're want just use this as boilerplate-less std::error_code wrapper, disable this." ON)
 
 add_library(erretik INTERFACE)
 add_library(erretik::erretik ALIAS erretik)
-target_compile_features(erretik INTERFACE cxx_std_23)
+target_compile_features(erretik INTERFACE cxx_std_20)
 target_sources(erretik
         INTERFACE FILE_SET HEADERS BASE_DIRS "include" FILES
         "include/erretik/erretik.hpp"
         "include/erretik/error.hpp"
         "include/erretik/error_code.hpp"
-        "include/erretik/stacktrace_stub.hpp"
+        "include/erretik/features_support.hpp"
 )
 
-
-include(CheckCXXSourceCompiles)
-check_cxx_source_compiles(
-        [[
-                #include <stacktrace>
-                int main() { const auto _ = std::stacktrace::current(); }
-        ]]
-        ERRETIK_HAVE_STD_STACKTRACE
-)
-
-if (NOT DEFINED ERRETIK_HAVE_STD_STACKTRACE)
-    if (ERRETIK_ENSURE_STACKTRACE)
-        message(
-                FATAL_ERROR
-                [[
-                        Cannot build erretik: looks like your compiler/std doesn't support C++23 <stacktrace>.
-                        Update your compiler or rerun cmake with '-DERRETIK_ENSURE_STACKTRACE=OFF'
-                ]]
-        )
-    else ()
-        message(
-                WARNING
-                [[
-                        Beware: stacktrace replaced with empty stub
-                        because your compiler doesn't support C++23 <stacktrace>
-                ]]
-        )
-        target_compile_definitions(erretik PRIVATE ERRETIK_STACKTRACE_UNSUPPORTED)
-    endif ()
+if (ERRETIK_FULL)
+    include("${CMAKE_CURRENT_LIST_DIR}/cmake/cpm.cmake")
+    CPMAddPackage("gh:jeremy-rifkin/cpptrace@1.0.4")
+    target_link_libraries(erretik INTERFACE cpptrace::cpptrace)
+    target_compile_definitions(erretik INTERFACE ERRETIK_FULL)
 endif ()
 
 if (ERRETIK_EXAMPLES)
