@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.3)
+cmake_minimum_required(VERSION 4.2)
 project(erretik
         VERSION 0.0.1
         DESCRIPTION "Modern C++ header-only error handling library"
