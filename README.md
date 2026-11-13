@@ -9,6 +9,3 @@ erretik is trying to solve both problems:
 - a general error type that stores the code, message, error location, and stack trace
 
 [Look](examples/erretik_example.cpp) how simple it is
-
-> [!IMPORTANT]
-erretik uses std::stacktrace for the stack trace; if your compiler/std does not support \<stacktrace>, erretik may provide a stub; to do this, restart cmake with ```-DERRETIK_ENSURE_STACKTRACE=NO```
